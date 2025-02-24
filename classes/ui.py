@@ -2,7 +2,7 @@ import pygame
 
 
 class Button:
-    def __init__(self, text, y, font_path, font_size, text_color, hover_color, action=None):
+    def __init__(self, text, x, y, font_path, font_size, text_color, hover_color, action=None):
         self.text = text
         self.action = action
         self.is_hovered = False
@@ -15,7 +15,7 @@ class Button:
         self.hover_surf = self.font.render(text, False, hover_color)
 
         # Позиционирование
-        self.rect = self.normal_surf.get_rect(center=(400, y))
+        self.rect = self.normal_surf.get_rect(center=(x, y))
 
     def draw(self, surface):
         current_surf = self.hover_surf if self.is_hovered else self.normal_surf

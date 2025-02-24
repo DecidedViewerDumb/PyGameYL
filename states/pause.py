@@ -3,33 +3,37 @@ from classes.ui import Button
 from utils.config import Config
 
 
-class MenuState:
+class PauseState:
     def __init__(self, screen):
         self.screen = screen
         self.buttons = []
         self.current_index = 0
+        self.background = self.create_overlay()
         self.init_buttons()
+
+    def create_overlay(self):
+        overlay = pygame.Surface(Config.GAME_SIZE, pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))  # Полупрозрачный чёрный
+        return overlay
 
     def init_buttons(self):
         button_params = [
-            ("Старт",   300, "game"),
-            ("Рекорды", 430, "records"),
-            ("Выход",   560, "quit")
+            ("Продолжить", Config.GAME_SIZE[1] // 2 - 60, "resume"),
+            ("Выйти в меню", Config.GAME_SIZE[1] // 2 + 60, "menu")
         ]
 
         for text, y, action in button_params:
             btn = Button(
                 text=text,
-                x=self.screen.get_width() // 2,
+                x=Config.GAME_SIZE[0] // 2,
                 y=y,
                 font_path=Config.FONTS["buttons"],
-                font_size=64,
+                font_size=56,
                 text_color=Config.COLORS["button_normal"],
                 hover_color=Config.COLORS["button_hover"],
                 action=action
             )
             self.buttons.append(btn)
-
         self.buttons[self.current_index].is_hovered = True
 
     def handle_events(self, events):
@@ -41,6 +45,8 @@ class MenuState:
                     self.change_selection(-1)
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE, pygame.K_KP_ENTER):
                     return self.buttons[self.current_index].action
+                elif event.key == pygame.K_ESCAPE:
+                    return self.buttons[0].action
         return None
 
     def change_selection(self, step):
@@ -48,26 +54,8 @@ class MenuState:
         self.current_index = (self.current_index + step) % len(self.buttons)
         self.buttons[self.current_index].is_hovered = True
 
-    def draw(self, background):
-        self.screen.blit(background, (0, 0))
-
-        # Рисуем заголовок
-        draw_centered_text(
-            surface=self.screen,
-            text="Arcanoid",
-            font=Config.FONTS["title"],
-            size=108,
-            color=Config.COLORS["title"],
-            y=100
-        )
-
+    def draw(self, game_screen):
+        self.screen.blit(game_screen, (0, 0))
+        self.screen.blit(self.background, (0, 0))
         for btn in self.buttons:
             btn.draw(self.screen)
-
-
-def draw_centered_text(surface, text, font, size, color, y):
-    """Отрисовка текста по центру горизонтали"""
-    font_obj = pygame.font.Font(font, size)
-    text_surface = font_obj.render(text, False, color)
-    text_rect = text_surface.get_rect(centerx=surface.get_width() // 2, y=y)
-    surface.blit(text_surface, text_rect)
