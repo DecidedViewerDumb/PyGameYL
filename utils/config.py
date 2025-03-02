@@ -1,8 +1,11 @@
 import json
 from pathlib import Path
+from .db_handler import DBHandler
 
 
 class Config:
+    db = DBHandler()
+
     # Добавляем параметры блоков
     BLOCK_WIDTH, BLOCK_HEIGHT = None, None
     BLOCK_START_X = 100
@@ -35,6 +38,7 @@ class Config:
 
     # Цвета
     COLORS = {
+        "records_title": (0, 255, 255),
         "button_normal": (0, 255, 150),     # светло-зеленый
         "button_hover": (255, 50, 100),     # малиновый
         "title": (0, 255, 255),              # голубой

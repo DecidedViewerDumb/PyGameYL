@@ -1,3 +1,4 @@
+from datetime import datetime
 import pygame
 from classes.entities import Player, Ball
 from classes.level_loader import LevelLoader
@@ -7,6 +8,8 @@ from utils.config import Config
 
 class GameState:
     def __init__(self, screen, level_num=1, score=0, lives=Config.INITIAL_LIVES):
+        self.start_time = datetime.now()
+        self.end_time = None
         self.screen = screen
         self.score = score  # Сохраняем переданный счет
         self.lives = lives  # Сохраняем переданные жизни
@@ -92,7 +95,15 @@ class GameState:
                 self.load_next_level()
                 return "level_up"
             else:
-                return "menu"
+                # Сохраняем результат при завершении последнего уровня
+                self.end_time = datetime.now()
+                Config.db.save_record(
+                    player_name="ИгрокТест",
+                    score=self.score,
+                    start_time=self.start_time,
+                    end_time=self.end_time
+                )
+                return "victory"
 
         keys = pygame.key.get_pressed()
         self.player.update(keys, Config.GAME_SIZE[0])
@@ -187,10 +198,18 @@ class GameState:
         return pygame.transform.scale(sprite, Config.HEART_SIZE)
 
     def handle_death(self):
-        if self.lives <= 0:
-            return "game_over"
-
         self.lives -= 1
+
+        if self.lives <= 0:
+            self.end_time = datetime.now()
+            # Сохраняем запись при завершении игры
+            Config.db.save_record(
+                player_name="ИгрокТест",
+                score=self.score,
+                start_time=self.start_time,
+                end_time=self.end_time
+            )
+            return "game_over"
 
         if self.lives > 0:
             self.is_respawning = True

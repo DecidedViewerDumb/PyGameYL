@@ -1,4 +1,5 @@
 import pygame
+from states.records import RecordsState
 from states.game import GameState
 from states.pause import PauseState
 from utils.config import Config
@@ -30,6 +31,9 @@ def main():
             if action == "game":
                 game = GameState(screen)
                 current_state = "game"
+            elif action == "records":
+                records = RecordsState(screen)
+                current_state = "records"
             elif action == "quit":
                 running = False
             elif action:
@@ -40,6 +44,8 @@ def main():
             game_result = game.update()
 
             if game_result == "game_over":
+                current_state = "menu"
+            elif game_result == "victory":
                 current_state = "menu"
             elif game_result == "death":
                 pass
@@ -61,6 +67,11 @@ def main():
             if action == "resume":
                 current_state = "game"
             elif action == "menu":
+                current_state = "menu"
+        elif current_state == "records":
+            action = records.handle_events(events)
+            records.draw(menu_bg)
+            if action == "menu":
                 current_state = "menu"
 
         pygame.display.flip()
