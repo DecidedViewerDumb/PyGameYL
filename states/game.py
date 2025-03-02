@@ -97,12 +97,6 @@ class GameState:
             else:
                 # Сохраняем результат при завершении последнего уровня
                 self.end_time = datetime.now()
-                Config.db.save_record(
-                    player_name="ИгрокТест",
-                    score=self.score,
-                    start_time=self.start_time,
-                    end_time=self.end_time
-                )
                 return "victory"
 
         keys = pygame.key.get_pressed()
@@ -202,13 +196,6 @@ class GameState:
 
         if self.lives <= 0:
             self.end_time = datetime.now()
-            # Сохраняем запись при завершении игры
-            Config.db.save_record(
-                player_name="ИгрокТест",
-                score=self.score,
-                start_time=self.start_time,
-                end_time=self.end_time
-            )
             return "game_over"
 
         if self.lives > 0:

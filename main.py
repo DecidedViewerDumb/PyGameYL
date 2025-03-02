@@ -1,4 +1,6 @@
 import pygame
+
+from states.game_over import GameOverState
 from states.records import RecordsState
 from states.game import GameState
 from states.pause import PauseState
@@ -43,10 +45,17 @@ def main():
             action = game.handle_events(events)
             game_result = game.update()
 
-            if game_result == "game_over":
-                current_state = "menu"
-            elif game_result == "victory":
-                current_state = "menu"
+            if game_result in ("game_over", "victory"):
+                # Сохраняем экран игры и переходим в состояние GameOver
+                game_screen = screen.copy()
+                game_over = GameOverState(
+                    screen=screen,
+                    result=game_result,
+                    score=game.score,
+                    start_time=game.start_time,
+                    end_time=game.end_time
+                )
+                current_state = "game_over"
             elif game_result == "death":
                 pass
             elif game_result == "level_up":
@@ -71,6 +80,11 @@ def main():
         elif current_state == "records":
             action = records.handle_events(events)
             records.draw(menu_bg)
+            if action == "menu":
+                current_state = "menu"
+        elif current_state == "game_over":
+            action = game_over.handle_events(events)
+            game_over.draw(game_screen)
             if action == "menu":
                 current_state = "menu"
 
