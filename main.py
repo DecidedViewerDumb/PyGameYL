@@ -38,14 +38,21 @@ def main():
         elif current_state == "game":
             action = game.handle_events(events)
             game_result = game.update()
-            game.draw()
 
             if game_result == "game_over":
+                current_state = "menu"
+            elif game_result == "death":
+                pass
+            elif game_result == "level_up":
+                pass
+            elif game_result == "menu":
                 current_state = "menu"
             elif action == "pause":
                 game_screen = screen.copy()
                 pause = PauseState(screen)
                 current_state = "pause"
+
+            game.draw()
 
         elif current_state == "pause":
             action = pause.handle_events(events)

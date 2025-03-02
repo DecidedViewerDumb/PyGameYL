@@ -120,6 +120,20 @@ class Ball(pygame.sprite.Sprite):
 
         # Столкновение с нижней границей
         if self.rect.bottom >= screen_height:
-            return "game_over"
+            return "death"
 
         return None
+
+    def predict_collision(self, screen_width, screen_height):
+        # Рассчитываем следующую позицию
+        next_x = self.rect.x + self.dx
+        next_y = self.rect.y + self.dy
+
+        # Проверяем выход за границы
+        if next_x <= 0 or next_x >= screen_width - self.rect.width:
+            self.dx *= -1
+        if next_y <= 0:
+            self.dy *= -1
+
+        # Возвращаем предполагаемую позицию
+        return pygame.Rect(next_x, next_y, self.rect.width, self.rect.height)
